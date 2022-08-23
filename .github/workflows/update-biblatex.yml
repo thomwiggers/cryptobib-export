@@ -1,0 +1,45 @@
+name: Update cryptobib export and patch with dates
+on:
+  schedule:
+    - cron: '30 5 * * *'
+  workflow_dispatch: {}
+
+jobs:
+  build_cryptobib:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Install dependencies"
+        run: |
+          sudo apt-get install -y -qq myrepos
+          sudo pip3 install pybtex unidecode
+      - name: "Checkout cryptobib"
+        run: |
+          mr bootstrap https://raw.githubusercontent.com/cryptobib/cryptobib/master/mrconfig/mrconfig_https cryptobib
+      - name: "Checkout our fork"
+        uses: "actions/checkout@v3"
+        with:
+          path: "export"
+          ref: "biblatex"
+      - name: "Generate cryptobib"
+        run: |
+          cp export/resources/process.py export/resources/process2.py cryptobib/db
+          cd cryptobib
+          python3 db_tools/gen_abbrev.py
+          cd db
+          python3 process.py
+          mv processed.bibyml abbrev.bibyml
+          python3 process2.py > out.bib
+          mv out.bib crypto_conf_list.bib
+          cd ..
+          python3 db_tools/gen_abbrev.py
+          python3 db_tools/gen.py
+          cp db/abbrev*.bib db/changes.txt db/crypto.bib ../export
+      - name: Create PR
+        uses: peter-evans/create-pull-request@v4
+        with:
+          commit-message: Update cryptobib
+          title: Update cryptobib
+          branch: update-cryptobib-biblatex
+          path: export
+          base: biblatex
+          delete-branch: true

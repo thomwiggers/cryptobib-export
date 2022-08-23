@@ -33,7 +33,7 @@ jobs:
           cd ..
           python3 db_tools/gen_abbrev.py
           python3 db_tools/gen.py
-          cp db/abbrev*.bib db/changes.txt db/crypto.bib ../export
+          cmp db/changes.txt ../export/changes.txt || cp db/abbrev*.bib db/changes.txt db/crypto.bib ../export
       - name: Create PR
         uses: peter-evans/create-pull-request@v4
         with:

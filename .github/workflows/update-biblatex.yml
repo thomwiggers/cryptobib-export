@@ -28,10 +28,12 @@ jobs:
           cd db
           python3 process.py
           mv processed.bibyml abbrev.bibyml
+          cd ..
+          python3 db_tools/gen_abbrev.py
+          cd db
           python3 process2.py > out.bib
           mv out.bib crypto_conf_list.bib
           cd ..
-          python3 db_tools/gen_abbrev.py
           python3 db_tools/gen.py
           cmp db/changes.txt ../export/changes.txt || cp db/abbrev*.bib db/changes.txt db/crypto.bib ../export
       - name: Create PR

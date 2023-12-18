@@ -16,7 +16,7 @@ jobs:
         run: |
           mr bootstrap https://raw.githubusercontent.com/cryptobib/cryptobib/master/mrconfig/mrconfig_https cryptobib
       - name: "Checkout our fork"
-        uses: "actions/checkout@v3"
+        uses: "actions/checkout@v4"
         with:
           path: "export"
           ref: "biblatex"
@@ -38,11 +38,11 @@ jobs:
           cp db/abbrev*.bib db/changes.txt db/crypto.bib ../export
       - name: Check if we need to do a PR
         run: |
-          export LINES_CHANGED=$(git log --numstat --pretty="" | awk 'NF==3 {lines+=$1+$2} END {printf("%d", lines)}')
+          export LINES_CHANGED=$(git diff --numstat --pretty="" | awk 'NF==3 {lines+=$1+$2} END {printf("%d", lines)}')
           echo "LINES_CHANGED=$LINES_CHANGED"
           echo "LINES_CHANGED=$LINES_CHANGED" >> $GITHUB_ENV
       - name: Create PR
-        uses: peter-evans/create-pull-request@v4
+        uses: peter-evans/create-pull-request@v5
         if: ${{ env.LINES_CHANGED > 10 }}
         with:
           commit-message: Update cryptobib

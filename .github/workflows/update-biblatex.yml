@@ -38,7 +38,7 @@ jobs:
           cp db/abbrev*.bib db/changes.txt db/crypto.bib ../export
       - name: Check if we need to do a PR
         run: |
-          export LINES_CHANGED=$(git diff --numstat --pretty="" | awk 'NF==3 {lines+=$1+$2} END {printf("%d", lines)}')
+          export LINES_CHANGED=$(git diff --numstat | awk 'NF==3 {lines+=$1+$2} END {printf("%d", lines)}')
           echo "LINES_CHANGED=$LINES_CHANGED"
           echo "LINES_CHANGED=$LINES_CHANGED" >> $GITHUB_ENV
       - name: Create PR
